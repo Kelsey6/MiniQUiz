@@ -1,9 +1,9 @@
 
-# 🧮 Mini Math Quiz
+# Mini Math Quiz
 
 A simple interactive math quiz built with **Streamlit**.
 
-## 🚀 Features
+## Features
 - 5 multiple-choice math questions
 - Randomized order each run
 - Progress bar showing quiz progress
@@ -11,4 +11,4 @@ A simple interactive math quiz built with **Streamlit**.
 - Review of incorrect answers at the end
 - Polished UI with instant feedback
 
-## 📂 File Structure
+## File Structure
