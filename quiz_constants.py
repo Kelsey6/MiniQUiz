@@ -1,35 +1,33 @@
-# quiz_constants.py
-
 QUESTIONS = [
     {
-        "question": "What is 8 + 6?",
-        "options": ["12", "13", "14", "15"],
-        "answer": "14",
-        "hint": "Think of 8 + 2 first, then add 4."
+        "question": "What is 8 × 7?",
+        "choices": ["54", "56", "58", "60"],
+        "correct_answer": "56",
+        "hint": "Think of counting by 8s or 7s"
     },
     {
-        "question": "What is 9 × 7?",
-        "options": ["56", "63", "72", "77"],
-        "answer": "63",
-        "hint": "It’s one less than 70 when multiplying by 7."
+        "question": "Solve for x: 3x + 5 = 20",
+        "choices": ["3", "5", "7", "15"],
+        "correct_answer": "5",
+        "hint": "Subtract 5 from both sides, then divide by 3"
     },
     {
-        "question": "What is 100 ÷ 25?",
-        "options": ["2", "3", "4", "5"],
-        "answer": "4",
-        "hint": "25 goes into 100 the same number of times as quarters in a dollar."
+        "question": "What is the area of a rectangle with length 6 units and width 4 units?",
+        "choices": ["10 square units", "20 square units", "24 square units", "30 square units"],
+        "correct_answer": "24 square units",
+        "hint": "Area = length × width"
     },
     {
-        "question": "What is 15 − 9?",
-        "options": ["5", "6", "7", "8"],
-        "answer": "6",
-        "hint": "Subtract 10 then add 1 back."
+        "question": "What is 25% of 80?",
+        "choices": ["15", "20", "25", "30"],
+        "correct_answer": "20",
+        "hint": "25% is the same as one-fourth or ÷4"
     },
     {
-        "question": "What is the square of 12?",
-        "options": ["124", "144", "154", "164"],
-        "answer": "144",
-        "hint": "It’s 12 × 12."
+        "question": "If a triangle has angles measuring 90° and 45°, what is the measure of the third angle?",
+        "choices": ["30°", "45°", "60°", "75°"],
+        "correct_answer": "45°",
+        "hint": "The angles in a triangle sum to 180°"
     }
 ]
 
