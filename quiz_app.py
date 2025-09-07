@@ -1,85 +1,91 @@
-# quiz_app.py
 import streamlit as st
 import random
 from quiz_constants import QUESTIONS
 
-# Initialize session state
-if "current_q" not in st.session_state:
-    st.session_state.current_q = 0
-    st.session_state.score = 0
-    st.session_state.credits = 0
-    st.session_state.answers = []
-    st.session_state.shuffled_questions = random.sample(QUESTIONS, len(QUESTIONS))
-    st.session_state.show_hint = False
+def initialize_session_state():
+    if 'current_question' not in st.session_state:
+        st.session_state.current_question = 0
+    if 'score' not in st.session_state:
+        st.session_state.score = 0
+    if 'questions' not in st.session_state:
+        st.session_state.questions = QUESTIONS.copy()
+        random.shuffle(st.session_state.questions)
+    if 'show_next' not in st.session_state:
+        st.session_state.show_next = False
+    if 'wrong_questions' not in st.session_state:
+        st.session_state.wrong_questions = []
 
-st.title("🧮 Mini Math Quiz")
+def check_answer():
+    selected_answer = st.session_state.user_answer
+    current_q = st.session_state.questions[st.session_state.current_question]
+    
+    if selected_answer == current_q['correct_answer']:
+        st.success('Correct! 🎉')
+        st.session_state.score += 1
+    else:
+        st.error(f'Sorry, that\'s incorrect. The correct answer was: {current_q["correct_answer"]}')
+        st.session_state.wrong_questions.append({
+            'question': current_q['question'],
+            'your_answer': selected_answer,
+            'correct_answer': current_q['correct_answer']
+        })
+    
+    st.session_state.show_next = True
 
-total_qs = len(st.session_state.shuffled_questions)
+def next_question():
+    st.session_state.current_question += 1
+    st.session_state.show_next = False
 
-# Show progress
-st.progress((st.session_state.current_q) / total_qs)
-st.write(f"**Question {st.session_state.current_q + 1} of {total_qs}**")
-
-if st.session_state.current_q < total_qs:
-    q = st.session_state.shuffled_questions[st.session_state.current_q]
-
-    # Show question
-    st.subheader(q["question"])
-    choice = st.radio("Choose an answer:", q["options"], index=None, key=f"q{st.session_state.current_q}")
-
-    # Hint system
-    if st.button("💡 Show Hint"):
-        if st.session_state.credits > 0:
-            st.session_state.credits -= 1
-            st.session_state.show_hint = True
-        else:
-            st.warning("You need at least 1 credit to view a hint!")
-
-    if st.session_state.show_hint:
-        st.info(f"Hint: {q['hint']}")
-
-    # Submit button
-    if st.button("Submit Answer"):
-        if choice:
-            correct = choice == q["answer"]
-            if correct:
-                st.success("✅ Correct!")
-                st.session_state.score += 1
-                st.session_state.credits += 1
-            else:
-                st.error(f"❌ Incorrect! The correct answer was {q['answer']}.")
-
-            st.session_state.answers.append({
-                "question": q["question"],
-                "your_answer": choice,
-                "correct_answer": q["answer"],
-                "is_correct": correct
-            })
-
-            # Move to next question
-            st.session_state.current_q += 1
-            st.session_state.show_hint = False
+def main():
+    st.title('Math Quiz App')
+    initialize_session_state()
+    
+    total_questions = len(st.session_state.questions)
+    current_q_num = st.session_state.current_question + 1
+    
+    # --- Check if quiz is complete first ---
+    if st.session_state.current_question >= total_questions:
+        st.progress(1.0)  # show full bar
+        st.success(f'Quiz Complete! You scored {st.session_state.score} out of {total_questions}!')
+        
+        if st.session_state.wrong_questions:
+            st.write('Questions you got wrong:')
+            for q in st.session_state.wrong_questions:
+                with st.expander(q['question']):
+                    st.write(f'Your answer: {q["your_answer"]}')
+                    st.write(f'Correct answer: {q["correct_answer"]}')
+        
+        if st.button('Restart Quiz'):
+            st.session_state.clear()
             st.experimental_rerun()
-        else:
-            st.warning("Please select an answer before submitting.")
+        return
+    
+    # --- Show progress bar only during quiz ---
+    progress = st.session_state.current_question / total_questions
+    st.progress(progress)
+    st.write(f'Question {current_q_num} of {total_questions}')
+    
+    # Display current question
+    current_q = st.session_state.questions[st.session_state.current_question]
+    st.write('### ' + current_q['question'])
+    
+    # Show hint button
+    if 'hint' in current_q:
+        if st.button('Show Hint'):
+            st.info(current_q['hint'])
+    
+    # Answer selection
+    st.radio(
+        'Choose your answer:',
+        options=current_q['choices'],
+        key='user_answer'
+    )
+    
+    # Submit answer button
+    if not st.session_state.show_next:
+        st.button('Submit Answer', on_click=check_answer)
+    else:
+        st.button('Next Question', on_click=next_question)
 
-else:
-    # Final results screen
-    st.header("🎉 Quiz Complete!")
-    st.write(f"Your final score: **{st.session_state.score} / {total_qs}**")
-    st.write(f"Credits earned: **{st.session_state.credits}**")
-
-    # Review section
-    st.subheader("Review of your answers:")
-    for ans in st.session_state.answers:
-        if not ans["is_correct"]:
-            st.write(f"❌ {ans['question']}")
-            st.write(f"Your answer: {ans['your_answer']}")
-            st.write(f"Correct answer: {ans['correct_answer']}")
-            st.write("---")
-
-    if st.button("Restart Quiz"):
-        for key in list(st.session_state.keys()):
-            del st.session_state[key]
-        st.experimental_rerun()
-
+if __name__ == '__main__':
+    main()
